@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ping Pong Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000000;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        #gameArea {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            background-color: #000;
+            border: 2px solid #00ff1a;
+            overflow: hidden;
+        }
+
+        .paddle {
+            position: absolute;
+            width: 10px;
+            height: 80px;
+            background-color: #00ff1a;
+        }
+
+        #paddle1 {
+            left: 0;
+            top: 160px;
+        }
+
+        #paddle2 {
+            right: 0;
+            top: 160px;
+        }
+
+        #ball {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: #00ff1a;
+            border-radius: 50%;
+            top: 192px;
+            left: 292px;
+        }
+
+        #message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 24px;
+            display: none;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="gameArea">
+    <div id="paddle1" class="paddle"></div>
+    <div id="paddle2" class="paddle"></div>
+    <div id="ball"></div>
+    <div id="message">Game Over! Press R to Restart</div>
+    <div id="score">Player 1: 0 | Player 2: 0</div>
+</div>
+
+<script>
+    const paddle1 = document.getElementById('paddle1');
+    const paddle2 = document.getElementById('paddle2');
+    const ball = document.getElementById('ball');
+    const gameArea = document.getElementById('gameArea');
+    const message = document.getElementById('message');
+    const scoreDisplay = document.getElementById('score');
+
+    let ballSpeedX = 5;
+    let ballSpeedY = 5;
+    let paddle1Y = 160;
+    let paddle2Y = 160;
+    let ballX = 292;
+    let ballY = 192;
+    let player1Score = 0;
+    let player2Score = 0;
+    let gameLoop;
+
+    function updateScore() {
+        scoreDisplay.textContent = `Player 1: ${player1Score} | Player 2: ${player2Score}`;
+    }
+
+    function resetGame() {
+        ballX = 292;
+        ballY = 192;
+        ballSpeedX = 5;
+        ballSpeedY = 5;
+        paddle1Y = 160;
+        paddle2Y = 160;
+        paddle1.style.top = `${paddle1Y}px`;
+        paddle2.style.top = `${paddle2Y}px`;
+        ball.style.left = `${ballX}px`;
+        ball.style.top = `${ballY}px`;
+        message.style.display = 'none';
+        startGame();
+    }
+
+    function moveBall() {
+        ballX += ballSpeedX;
+        ballY += ballSpeedY;
+
+        // Bounce off top and bottom walls
+        if (ballY <= 0 || ballY >= gameArea.clientHeight - ball.offsetHeight) {
+            ballSpeedY *= -1;
+        }
+
+        // Bounce off paddles 
+        if (
+            (ballX <= paddle1.offsetWidth &&
+                ballY + ball.offsetHeight >= paddle1Y &&
+                ballY <= paddle1Y + paddle1.offsetHeight) ||
+            (ballX + ball.offsetWidth >= gameArea.clientWidth - paddle2.offsetWidth &&
+                ballY + ball.offsetHeight >= paddle2Y &&
+                ballY <= paddle2Y + paddle2.offsetHeight)
+        ) {
+            ballSpeedX *= -1;
+        }
+
+        // Check if ball goes out of bounds
+        if (ballX <= 0) {
+            player2Score++;
+            updateScore();
+            endGame();
+        } else if (ballX >= gameArea.clientWidth - ball.offsetWidth) {
+            player1Score++;
+            updateScore();
+            endGame();
+        }
+
+        ball.style.left = `${ballX}px`;
+        ball.style.top = `${ballY}px`;
+    }
+
+    function endGame() {
+        clearInterval(gameLoop);
+        message.style.display = 'block';
+    }
+
+    function movePaddles() {
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'w' && paddle1Y > 0) {
+                paddle1Y -= 20;
+            } else if (event.key === 's' && paddle1Y < gameArea.clientHeight - paddle1.offsetHeight) {
+                paddle1Y += 20;
+            } else if (event.key === 'ArrowUp' && paddle2Y > 0) {
+                paddle2Y -= 20;
+            } else if (event.key === 'ArrowDown' && paddle2Y < gameArea.clientHeight - paddle2.offsetHeight) {
+                paddle2Y += 20;
+            } else if (event.key === 'r') {
+                resetGame();
+            }
+
+            paddle1.style.top = `${paddle1Y}px`;
+            paddle2.style.top = `${paddle2Y}px`;
+        });
+    }
+
+    function startGame() {
+        gameLoop = setInterval(() => {
+            moveBall();
+        }, 16);
+    }
+
+    updateScore();
+    movePaddles();
+    startGame();
+</script>
+
+
+  <footer class="footer">
+    ©2025 Badie Badie,
+    Just a dude trying to make cool projects with html and css  
+  </footer>
+
+
+  <style>
+    .footer {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color:rgb(69, 71, 73);
+    color: white;
+    text-align:center;
+    font-size: 15px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-right: 50px;
+    padding-left: 50px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  }
+  </style>
+
+  
+
+</body>
+</html>
+
